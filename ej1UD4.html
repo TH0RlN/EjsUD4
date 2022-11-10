@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcular letra DNI</title>
+</head>
+<body>
+    <div>
+        <table>
+            <tr>
+                <td><label for="dni">DNI: </label></td>
+                <td><input type="text" id="dni" name="dni"></td>
+            </tr>
+            <tr><td></td><td><input type="button" value="Enviar" id="enviar"></td></tr>
+        </table>
+    </div>
+    <div id="result">
+
+    </div>
+</body>
+<footer>
+    <script>
+        document.getElementById("enviar").addEventListener('click', (evt) =>
+        {
+            var letras  = ['T', 'R', 'W', 'A', 'G', 'M', 'Y', 'F', 'P', 'D', 'X', 'B', 'N', 'J', 'Z', 'S', 'Q', 'V', 'H', 'L', 'C', 'K', 'E', 'T'];
+            var dni     = document.getElementById('dni').value;
+            var num     = parseInt(dni);
+            var char    = dni.substr(8).toUpperCase();
+            
+            console.log(dni.length);
+            if (dni.length != 9)
+                document.getElementById('result').innerHTML = "<p>Longitud incorrecta</p>";
+            else if (num < 0 || num > 99999999)
+                document.getElementById('result').innerHTML = "<p>Número no válido</p>";
+            else if (char != letras[num % 23])
+                document.getElementById('result').innerHTML = "<p>Letra no válida, debería ser: '" + letras[num % 23] + "'</p>";
+            else
+                document.getElementById('result').innerHTML = "<p>Número y letra correctos</p>";
+
+        });
+    </script>
+</footer>
+</html>
