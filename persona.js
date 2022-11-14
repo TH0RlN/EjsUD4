@@ -40,29 +40,42 @@ function main()
         this.curso = "";
         this.grupo = "";
 
-        this.registrar = function ()
+        this.registrar = function (nombre, edad, genero, curso, grupo)
         {
+            this.nombre = nombre;
+            this.edad   = edad;
+            this.genero = genero;
+            this.curso  = curso;
+            this.grupo  = grupo;
         };
     }
 
+    
+    Profesor.prototype = new Persona();
     function Profesor()
     {;
         this.asignatura = "";
         this.nivel = "";
-
-        this.asignar = function ()
+        
+        this.asignar = function (nombre, edad, genero, asignatura, nivel)
         {
+            this.nombre     = nombre;
+            this.edad       = edad;
+            this.genero     = genero;
+            this.asignatura = asignatura;
+            this.nivel      = nivel;
         };
     }
 
-    /*var alumno      = new Alumno("Juan", 30, "hombre", "1ero", "B");
-    var profesor    = new Profesor("Juan", 30, "hombre", "Matematicas", "Alto");
+    var alumno      = new Alumno();
+    var profesor    = new Profesor();
+
+    alumno.registrar("Luis", 15, "hombre", "1ero", "B");
+    profesor.asignar("Juan", 30, "hombre", "Matematicas", "Alto");
 
     document.getElementById("body").innerHTML += alumno.obtDetalles();
     document.getElementById("body").innerHTML += "<br>";
-    document.getElementById("body").innerHTML += profesor.obtDetalles();*/
-
-    console.log(Object.getPrototypeOf(new Persona("Juan", 16, "Masculino")));
+    document.getElementById("body").innerHTML += profesor.obtDetalles();
 
 }
 
