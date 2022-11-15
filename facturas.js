@@ -18,8 +18,8 @@ class Empresa
         this.nif        = nif;
     }
 }
-const empresa = new Empresa("Ladrillos S.A.", "Calle Falsa, 123", "987654321", "12345678A")
 
+const empresa = new Empresa("Pirotecnia S.A.", "Calle Falsa, 123", "987654321", "12345678A")
 
 /**
  * Una clase que nos permite instanciar objetos cliente
@@ -125,6 +125,37 @@ class   Factura
      */
     showFactura()
     {
+        var factura = window.open();
+        var str  = "";
+
+        str += "<table>";
+
+        for (const key in this.empresa)
+        {
+            str += "<tr><td>" + this.empresa[key] + "</td><td></td></tr>";
+        }
         
+        for (const key in this.cliente)
+        {
+            str += "<tr><td></td><td>" + this.cliente[key] + "</td></tr>";
+        }
+
+        str += "</table>";
+
+        factura.document.getElementsByTagName('body')[0].innerHTML = str;
     }
 }
+
+function main()
+{
+    var factura = new Factura(234, new Date());
+
+    factura.setCliente(new Cliente("Juan", "Rua Pepe", 12345, "123123Z"));
+
+    document.getElementById('boton').addEventListener('click', (evt) =>
+    {
+        factura.showFactura();
+    })
+}
+
+main();
