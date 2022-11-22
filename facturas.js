@@ -1,3 +1,23 @@
+class Item
+{
+    constructor(nombre, cant, precio)
+    {
+        this.nombre     = nombre;
+        this.cant       = cant;
+        this.precio     = precio;
+    }
+
+    calcParcial()
+    {
+        return this.cant * this.precio;
+    }
+
+    showItem()
+    {
+        return new Array(this.nombre, this.cant, this.precio, this.calcParcial());
+    }
+}
+
 /**
  * Una clase para crear la empresa
  */
@@ -56,13 +76,17 @@ class   Factura
     {
         this.empresa    = empresa;
         this.cliente    = "";
-        this.items      = {};
+        this.items      = [];
         this.id         = id;
-        this.desc       = 0
-        this.iva        = 0
+        this.desc       = 0;
+        this.iva        = 0;
         this.pago       = "";
         this.pagada     = false;
         this.fecha      = fecha;
+        this.suma       = 0;
+        this.descuento  = 0;
+        this.base       = 0;
+        this.tIva       = 0;
         this.total      = 0;
     }
 
@@ -121,28 +145,83 @@ class   Factura
     }
 
     /**
+     * Calcula la Suma, el descuento, la base imponible, el IVA y el total
+     */
+    calcFactura()
+    {
+        for (const item in this.items)
+        {
+            this.suma += this.items[item].calcParcial();
+        }
+
+        this.descuento  = this.suma * this.desc;
+        this.base       = this.suma - this.descuento;
+        this.tIva       = this.base * this.iva;
+        this.total      = this.base + this.tIva;
+    }
+
+    /**
      * Muestra en una nueva ventana la factura correspondiente
      */
     showFactura()
     {
-        var factura = window.open();
-        var str  = "";
+        var factura         = document.open("", "Factura", "width=800, height=800");
+        var style           = document.createElement('style');
+        var datosCliente    = document.createElement('div');
+        var datosEmpresa    = document.createElement('div');
+        var str             = "";
 
-        str += "<table>";
+        this.calcFactura();
+
+        factura.document.head.innerHTML = "";
+        factura.document.body.innerHTML = "";
+
+        style.innerHTML = ".green{color: green} .red{color:red} .strong{font-weight : bolder} .right{text-align : right} #subtotales{width : 50%; float : right; clear : both} #items{width : 100%} td,th{border : 1px solid black; text-align: left; padding: 2px}";
+        factura.document.head.append(style);
 
         for (const key in this.empresa)
         {
-            str += "<tr><td>" + this.empresa[key] + "</td><td></td></tr>";
+            str += this.empresa[key] + "<br>";
         }
-        
+        datosEmpresa.innerHTML = str;
+
+        str = "";
         for (const key in this.cliente)
         {
-            str += "<tr><td></td><td>" + this.cliente[key] + "</td></tr>";
+            str += this.cliente[key] + "<br>";
+        }
+        datosCliente.innerHTML = str;
+
+        datosCliente.style.textAlign = "right";
+        factura.document.body.append(datosEmpresa);
+        factura.document.body.append(datosCliente);
+
+        str = "";
+
+        str += "<p>Fecha: "+ this.fecha.toLocaleDateString() +"</p>";
+
+        str += ("<table id='items'><tr><th>Descripción</th><th>Cantidad</th><th>Precio</th><th>Parcial</th></tr>");
+        for (const item in this.items)
+        {
+            var array = this.items[item].showItem();
+            str += "<tr>";
+            str += "<td>" + array[0] + "</td><td>" + array[1] + "</td><td>" + array[2] + "</td><td class='right'>" + array[3] + " €</td>";
+            str += "</tr>";
         }
 
+        str += "</table><table id='subtotales'>";
+        str += "<tr><td>" + "Suma"                                          + "</td><td class='right'>" + this.suma         + " €</td></tr>";
+        str += "<tr><td>" + "Descuento ("   +  (this.desc * 100)    + "%)"  + "</td><td class='right'>" + this.descuento    + " €</td></tr>";
+        str += "<tr><td>" + "Base imp."                                     + "</td><td class='right'>" + this.base         + " €</td></tr>";
+        str += "<tr><td>" + "IVA ("         + (this.iva * 100)      + "%)"  + "</td><td class='right'>" + this.tIva         + " €</td></tr>";
+        str += "<tr><td class='strong'>"    + "TOTAL"                       + "</td><td class='right strong'>"              + this.total + " €</td></tr>";
         str += "</table>";
 
-        factura.document.getElementsByTagName('body')[0].innerHTML = str;
+        str += "<p>Nº Factura: "    + this.id +"</p>";
+        str += "<p>Forma de pago: " + this.pago +"</p>";
+        str += "<h2 class='" + (this.pagada ? "green'> PAGADA" : "red'> A DEBER") + "</h2>";
+
+        factura.document.body.innerHTML += str;
     }
 }
 
@@ -151,6 +230,10 @@ function main()
     var factura = new Factura(234, new Date());
 
     factura.setCliente(new Cliente("Juan", "Rua Pepe", 12345, "123123Z"));
+    factura.addItems(new Array(new Item("Chocolate", 2, 5.1), new Item("Molinillo", 5, 1.1), new Item("Café", 3, 2)));
+    factura.setIva(.21);
+    factura.pago = "Al contado";
+    factura.pagada = true;
 
     document.getElementById('boton').addEventListener('click', (evt) =>
     {
