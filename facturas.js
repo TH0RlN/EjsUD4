@@ -160,6 +160,24 @@ class   Factura
     }
 
     /**
+     * Cambia el método de pago
+     * @param {String} pago 
+     */
+    setPago(pago)
+    {
+        this.pago = pago;
+    }
+
+    /**
+     * Cambia el estado de la factura (true:pagada, false:a deber)
+     * @param {Boolean} estado 
+     */
+    setEstado(estado)
+    {
+        this.pagada = estado;
+    }
+
+    /**
      * Calcula la Suma, el descuento, la base imponible, el IVA y el total
      */
     calcFactura()
@@ -256,24 +274,42 @@ function main()
 
     document.getElementById('boton1').addEventListener('click', (evt) =>
     {
+        ejemploFactura(1, nfactura);
+        nfactura++;
+    });
+    
+    
+    document.getElementById('boton2').addEventListener('click', (evt) =>
+    {
+        ejemploFactura(2, nfactura);
+        nfactura++;
+    });
+}
+
+/**
+ * Función a la que llaman los eventos
+ * @param {Number} num 
+ * @param {Number} nfactura 
+ */
+function ejemploFactura(num, nfactura)
+{
+    if (num == 1)
+    {
         var factura = new Factura(nfactura, new Date());
 
         factura.setCliente(new Cliente("Feldespato", "Espino Oscuro, s/n", 966477123, "123123Z"));
         factura.addItems(new Array(new Item("Rape en lata", 20, 8), new Item("Combustible cobete", 100, 2.67), new Item("Traje espacial", 1, 199.95)));
         factura.setIva(.21);
         factura.setDesc(.01 );
-        factura.pago = "50% al pedido, 50% a la entrega";
-        factura.pagada = false;
+        factura.setPago("50% al pedido, 50% a la entrega");
+        factura.setEstado(false);
 
         factura.showFactura();
         console.log(factura);
 
         delete factura;
-        nfactura++;
-    });
-    
-    
-    document.getElementById('boton2').addEventListener('click', (evt) =>
+    }
+    if (num == 2)
     {
         var factura = new Factura(nfactura, new Date());
         
@@ -281,17 +317,14 @@ function main()
         factura.addItems(new Array(new Item("Máscara Nomai", 1, 4999.87), new Item("Nave exploradora", 1, 500), new Item("Spray anti materia fantasmal", 100, 1.2)));
         factura.setIva(.21);
         factura.setDesc(.40);
-        factura.pago = "Al contado";
-        factura.pagada = true;
+        factura.setPago("Al contado");
+        factura.setEstado(true);
         
         factura.showFactura();
         console.log(factura);
         
         delete factura;
-        nfactura++;
-    });
-
-
+    }
 }
 
 main();
