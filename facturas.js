@@ -1,23 +1,3 @@
-class Item
-{
-    constructor(nombre, cant, precio)
-    {
-        this.nombre     = nombre;
-        this.cant       = cant;
-        this.precio     = precio;
-    }
-
-    calcParcial()
-    {
-        return this.cant * this.precio;
-    }
-
-    showItem()
-    {
-        return new Array(this.nombre, this.cant, this.precio, this.calcParcial());
-    }
-}
-
 /**
  * Una clase para crear la empresa
  */
@@ -39,7 +19,43 @@ class Empresa
     }
 }
 
-const empresa = new Empresa("Pirotecnia S.A.", "Calle Falsa, 123", "987654321", "12345678A")
+const empresa = new Empresa("Outer Wilds Ventures", "Cuenca de Lumbre, Lumbre", "987654321", "12345678A")
+
+/**
+ * Esta clase nos permite crear items para añadir lineas de productos a la factura
+ */
+class Item
+{
+    /**
+     * @param {String} nombre 
+     * @param {Number} cant 
+     * @param {Number} precio 
+     */
+    constructor(nombre, cant, precio)
+    {
+        this.nombre     = nombre;
+        this.cant       = cant;
+        this.precio     = precio;
+    }
+
+    /**
+     * Calcula el paarcial del item
+     * @returns {Number}
+     */
+    calcParcial()
+    {
+        return this.cant * this.precio;
+    }
+
+    /**
+     * Devuelve un array con todas las propiedades del objeto
+     * @returns {Array}
+     */
+    showItem()
+    {
+        return new Array(this.nombre, this.cant, this.precio, this.calcParcial());
+    }
+}
 
 /**
  * Una clase que nos permite instanciar objetos cliente
@@ -47,7 +63,6 @@ const empresa = new Empresa("Pirotecnia S.A.", "Calle Falsa, 123", "987654321", 
 class Cliente
 {
     /**
-     * 
      * @param {String} nombre 
      * @param {String} direccion 
      * @param {Number} telf 
@@ -136,7 +151,7 @@ class   Factura
     }
 
     /**
-     * Permite cambair el porcentaje de descuento
+     * Permite cambiar el porcentaje de descuento
      * @param {Number} desc 
      */
     setDesc(desc)
@@ -176,15 +191,18 @@ class   Factura
         factura.document.head.innerHTML = "";
         factura.document.body.innerHTML = "";
 
+        //Creo los estilos necesarios para mostrar correctamente los datos
         style.innerHTML = ".green{color: green} .red{color:red} .strong{font-weight : bolder} .right{text-align : right} #subtotales{width : 50%; float : right; clear : both} #items{width : 100%} td,th{border : 1px solid black; text-align: left; padding: 2px}";
         factura.document.head.append(style);
 
+        //Añade los datos de la empresa
         for (const key in this.empresa)
         {
             str += this.empresa[key] + "<br>";
         }
         datosEmpresa.innerHTML = str;
 
+        //Añade los datos del cliente
         str = "";
         for (const key in this.cliente)
         {
@@ -198,47 +216,82 @@ class   Factura
 
         str = "";
 
-        str += "<p>Fecha: "+ this.fecha.toLocaleDateString() +"</p>";
+        //Datos básicos de la factura (nº y fecha).
+        str += "<p><strong>Nº Factura: " + this.id.toString().padStart(5, '0') + "</strong>";
+        str += " - Fecha: "+ this.fecha.toLocaleDateString() +"</p>";
 
+        //Tabla de items
         str += ("<table id='items'><tr><th>Descripción</th><th>Cantidad</th><th>Precio</th><th>Parcial</th></tr>");
         for (const item in this.items)
         {
             var array = this.items[item].showItem();
             str += "<tr>";
-            str += "<td>" + array[0] + "</td><td>" + array[1] + "</td><td>" + array[2] + "</td><td class='right'>" + array[3] + " €</td>";
+            str += "<td>" + array[0] + "</td><td>" + array[1] + "</td><td class='right'>" + array[2].toFixed(2) + "€</td><td class='right'>" + array[3].toFixed(2) + " €</td>";
             str += "</tr>";
         }
 
+        //Tabla de subtotales y total
         str += "</table><table id='subtotales'>";
-        str += "<tr><td>" + "Suma"                                          + "</td><td class='right'>" + this.suma         + " €</td></tr>";
-        str += "<tr><td>" + "Descuento ("   +  (this.desc * 100)    + "%)"  + "</td><td class='right'>" + this.descuento    + " €</td></tr>";
-        str += "<tr><td>" + "Base imp."                                     + "</td><td class='right'>" + this.base         + " €</td></tr>";
-        str += "<tr><td>" + "IVA ("         + (this.iva * 100)      + "%)"  + "</td><td class='right'>" + this.tIva         + " €</td></tr>";
-        str += "<tr><td class='strong'>"    + "TOTAL"                       + "</td><td class='right strong'>"              + this.total + " €</td></tr>";
+        str += "<tr><td>" + "Suma"                                          + "</td><td class='right'>" + this.suma.toFixed(2)         + " €</td></tr>";
+        str += "<tr><td>" + "Descuento ("   +  (this.desc * 100)    + "%)"  + "</td><td class='right'>" + this.descuento.toFixed(2)    + " €</td></tr>";
+        str += "<tr><td>" + "Base imp."                                     + "</td><td class='right'>" + this.base.toFixed(2)         + " €</td></tr>";
+        str += "<tr><td>" + "IVA ("         + (this.iva * 100)      + "%)"  + "</td><td class='right'>" + this.tIva.toFixed(2)         + " €</td></tr>";
+        str += "<tr><td class='strong'>"    + "TOTAL"                       + "</td><td class='right strong'>" + this.total.toFixed(2) + " €</td></tr>";
         str += "</table>";
 
-        str += "<p>Nº Factura: "    + this.id +"</p>";
-        str += "<p>Forma de pago: " + this.pago +"</p>";
+        //Forma de pago y estado
+        str += "<p><strong>Forma de pago:</strong> " + this.pago +"</p>";
         str += "<h2 class='" + (this.pagada ? "green'> PAGADA" : "red'> A DEBER") + "</h2>";
 
         factura.document.body.innerHTML += str;
     }
 }
 
+/**
+ * Eventos para la página. En vez de tener unas facturas ejemplo se podría crear una interfaz que nos permita elegir los datos uno por uno.
+ */
 function main()
 {
-    var factura = new Factura(234, new Date());
+    var nfactura = 1;
 
-    factura.setCliente(new Cliente("Juan", "Rua Pepe", 12345, "123123Z"));
-    factura.addItems(new Array(new Item("Chocolate", 2, 5.1), new Item("Molinillo", 5, 1.1), new Item("Café", 3, 2)));
-    factura.setIva(.21);
-    factura.pago = "Al contado";
-    factura.pagada = true;
-
-    document.getElementById('boton').addEventListener('click', (evt) =>
+    document.getElementById('boton1').addEventListener('click', (evt) =>
     {
+        var factura = new Factura(nfactura, new Date());
+
+        factura.setCliente(new Cliente("Feldespato", "Espino Oscuro, s/n", 966477123, "123123Z"));
+        factura.addItems(new Array(new Item("Rape en lata", 20, 8), new Item("Combustible cobete", 100, 2.67), new Item("Traje espacial", 1, 199.95)));
+        factura.setIva(.21);
+        factura.setDesc(.01 );
+        factura.pago = "50% al pedido, 50% a la entrega";
+        factura.pagada = false;
+
         factura.showFactura();
-    })
+        console.log(factura);
+
+        delete factura;
+        nfactura++;
+    });
+    
+    
+    document.getElementById('boton2').addEventListener('click', (evt) =>
+    {
+        var factura = new Factura(nfactura, new Date());
+        
+        factura.setCliente(new Cliente("Gabro", "Abismo del gigante, s/n", 901554521, "123123A"));
+        factura.addItems(new Array(new Item("Máscara Nomai", 1, 4999.87), new Item("Nave exploradora", 1, 500), new Item("Spray anti materia fantasmal", 100, 1.2)));
+        factura.setIva(.21);
+        factura.setDesc(.40);
+        factura.pago = "Al contado";
+        factura.pagada = true;
+        
+        factura.showFactura();
+        console.log(factura);
+        
+        delete factura;
+        nfactura++;
+    });
+
+
 }
 
 main();
